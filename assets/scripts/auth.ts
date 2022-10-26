@@ -16,6 +16,14 @@ if (authPage) {
         
         hideAuthForms();
 
+        if (sessionStorage.getItem('email')) {
+            document.querySelectorAll<HTMLInputElement>('[name="email"]').forEach((el) => {
+
+                el.value = sessionStorage.getItem('email') ?? '';
+    
+            });
+        }
+
         switch (window.location.hash) {
             case '#login':
                 showAuthForm('login');
@@ -33,7 +41,6 @@ if (authPage) {
                 showAuthForm('auth-email');
         }
 
-        
     }
 
     window.addEventListener('load', () => {
@@ -41,5 +48,21 @@ if (authPage) {
         render();
     });
     window.addEventListener('hashchange', () => render());
+
+    const formAuthEmail = document.querySelector('#auth-email') as HTMLFormElement;
+
+    formAuthEmail?.addEventListener('submit', (e) => {
+
+        e.preventDefault();
+
+        const form = e.target as HTMLFormElement;
+
+        const input = form?.querySelector('[type="email"]') as HTMLInputElement;
+
+        sessionStorage.setItem('email', input.value);
+
+        location.hash = '#login';
+
+    });
 
 }
