@@ -30,6 +30,8 @@ if (page) {
 
             li.innerText = format(diaCorrente, 'd');
 
+            li.dataset.schedule = format(diaCorrente, 'yyyy-MM-dd');
+
             if (format(diaCorrente, 'yyyyMM') < format(inicioMes, 'yyyyMM')) {
                 li.classList.add('month-prev');
             }
@@ -42,11 +44,49 @@ if (page) {
                 li.classList.add('active');
             }
 
+            li.addEventListener('click', (evento) => {
+
+                const diaSelecionado = calendario.querySelector('.selected');
+    
+                if (diaSelecionado) {
+                    diaSelecionado.classList.remove('selected');
+                }
+
+                const meuLi = evento.target as HTMLLIElement;
+
+                meuLi.classList.add('selected');
+
+                const scheduleAt = document.querySelector('[name="schedule_at"]') as HTMLInputElement;
+
+                scheduleAt.value = meuLi.dataset.schedule ?? '';
+
+            });
+
             calendario.appendChild(li);
 
             diaCorrente = addDays(diaCorrente, 1);
 
-        }        
+        }
+
+        /*
+        calendario.querySelectorAll('li').forEach((elemento) => {
+
+            elemento.addEventListener('click', (evento) => {
+                
+                const diaSelecionado = calendario.querySelector('.selected');
+
+                if (diaSelecionado) {
+                    diaSelecionado.classList.remove('selected');
+                }
+
+                const li = evento.target as HTMLLIElement;
+
+                li.classList.add('selected');
+
+            });
+
+        });
+        */
 
     }
 
