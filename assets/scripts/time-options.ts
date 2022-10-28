@@ -1,10 +1,6 @@
 import { format, parse } from "date-fns";
 import locale from "date-fns/locale/pt-BR";
-
-type TimeOptionItem = {
-    name: string;
-    value: number;
-};
+import { TimeOptionItem } from "./types/timeOptionItem";
 
 const page = document.querySelector('#time-options') as HTMLElement;
 
