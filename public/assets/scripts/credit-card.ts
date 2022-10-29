@@ -5,9 +5,7 @@ const page = document.querySelector('#schedules-payment') as HTMLElement;
 
 if (page) {
 
-    const values = queryStringToJSON();
-
-    console.log(values);
+    queryStringToJSON();
 
     const name = page.querySelector('#name') as HTMLInputElement;
     const number = page.querySelector('#number') as HTMLInputElement;
