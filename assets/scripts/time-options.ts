@@ -1,5 +1,6 @@
 import { format, parse } from "date-fns";
 import locale from "date-fns/locale/pt-BR";
+import { queryStringToJSON } from "./functions/queryStringToJSON";
 import { TimeOptionItem } from "./types/timeOptionItem";
 
 const page = document.querySelector('#time-options') as HTMLElement;
@@ -33,6 +34,8 @@ if (page) {
 
     const scheduleAt = queryString.split('=')[1];
 
+    queryStringToJSON();
+
     const parsedScheduleAt = parse(scheduleAt, 'yyyy-MM-dd', new Date());
 
     if (String(parsedScheduleAt) === 'Invalid Date') {
@@ -43,7 +46,7 @@ if (page) {
 
             const button = page.querySelector('[type=submit]') as HTMLButtonElement;
 
-            if (page.querySelector('[name=time-option]:checked')) {
+            if (page.querySelector('[name=time_option]:checked')) {
                 button.disabled = false;
             } else {
                 button.disabled = true;
@@ -61,7 +64,7 @@ if (page) {
             const label = document.createElement('label');
 
             label.innerHTML = `
-                <input type="radio" name="time-option" value="${item.value}" />
+                <input type="radio" name="time_option" value="${item.value}" />
                 <span>${item.name}</span>
             `;
 

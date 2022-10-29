@@ -1,4 +1,6 @@
 import { formatCurrency } from "./functions/formatCurrency";
+import { queryStringToJSON } from "./functions/queryStringToJSON";
+import { setFormValues } from "./functions/setFormValues";
 import { ServiceItem } from "./types/serviceItem";
 
 const page = document.querySelector('#schedules-services') as HTMLElement;
@@ -31,6 +33,19 @@ if (page) {
         description: 'Enceramento.',
         price: 100,
     }];
+
+    const values = queryStringToJSON();
+    setFormValues(values);
+
+    services.filter(({ id, description, name, price }) => {
+
+        id
+        description
+        name
+        price
+
+    });
+
     let selectedServices: number[] = [];
 
     const renderSummary = () => {
@@ -90,9 +105,7 @@ if (page) {
             return valorAnterior + valorAtual;
         }, 0);
 
-        if (total) {
-            totalElement.innerText = formatCurrency(total);
-        }
+        totalElement.innerText = formatCurrency(total);
 
     }
 
