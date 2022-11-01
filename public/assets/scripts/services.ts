@@ -1,3 +1,4 @@
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { formatCurrency } from "./functions/formatCurrency";
 import { queryStringToJSON } from "./functions/queryStringToJSON";
 import { setFormValues } from "./functions/setFormValues";
@@ -7,33 +8,8 @@ const page = document.querySelector('#schedules-services') as HTMLElement;
 
 if (page) {
 
-    const services: ServiceItem[] = [{
-        id: 1,
-        name: 'Revisão',
-        description: 'Verificação mínima necessária.',
-        price: 100,
-    }, {
-        id: 2,
-        name: 'Alinhamento',
-        description: 'Alinhamento e balanceamento.',
-        price: 400,
-    }, {
-        id: 3,
-        name: 'Filtros',
-        description: 'Troca do filtro de ar e combustível.',
-        price: 200,
-    }, {
-        id: 4,
-        name: 'Troca de óleo',
-        description: 'Troca de óleo.',
-        price: 400,
-    }, {
-        id: 5,
-        name: 'Enceramento',
-        description: 'Enceramento.',
-        price: 100,
-    }];
-
+    let services: ServiceItem[] = [];
+    const database = getFirestore();
     const values = queryStringToJSON();
     setFormValues(values);
 
@@ -111,48 +87,66 @@ if (page) {
 
     const options = page.querySelector('.options') as HTMLDivElement;
 
-    options.innerHTML = '';
+    const renderServices = () => {
 
-    services.forEach((item) => {
+        options.innerHTML = '';
 
-        const label = document.createElement('label');
+        services.forEach((item) => {
 
-        label.innerHTML = `
-            <input type="checkbox" name="service" value="${item.id}" />
-            <div class="square">
-                <div></div>
-            </div>
-            <div class="content">
-                <span class="name">${item.name}</span>
-                <span class="description">${item.description}</span>
-                <span class="price">${formatCurrency(item.price)}</span>
-            </div>
-        `;
+            const label = document.createElement('label');
 
-        const input = label.querySelector('input') as HTMLInputElement;
+            label.innerHTML = `
+                <input type="checkbox" name="service" value="${item.id}" />
+                <div class="square">
+                    <div></div>
+                </div>
+                <div class="content">
+                    <span class="name">${item.name}</span>
+                    <span class="description">${item.description}</span>
+                    <span class="price">${formatCurrency(item.price)}</span>
+                </div>
+            `;
 
-        input.addEventListener('change', (event) => {
+            const input = label.querySelector('input') as HTMLInputElement;
 
-            const element = event.target as HTMLInputElement;
+            input.addEventListener('change', (event) => {
 
-            if (element.checked) {
-                selectedServices.push(Number(element.value));
-            } else {
-                selectedServices = selectedServices.filter((id) => {
-                    return id !== Number(element.value);
-                });
-            }
+                const element = event.target as HTMLInputElement;
 
-            renderSummary();
-            calcTotal();
+                if (element.checked) {
+                    selectedServices.push(Number(element.value));
+                } else {
+                    selectedServices = selectedServices.filter((id) => {
+                        return id !== Number(element.value);
+                    });
+                }
+
+                renderSummary();
+                calcTotal();
+
+            });
+
+            options.appendChild(label);
 
         });
 
-        options.appendChild(label);
-
-    });
+    }
 
     renderSummary();
+
+    onSnapshot(collection(database, 'services'), (collection) => {
+
+        services = [];
+
+        collection.forEach((doc) => {
+
+            services.push(doc.data() as ServiceItem);
+
+        });
+
+        renderServices();
+
+    });
 
 }
 

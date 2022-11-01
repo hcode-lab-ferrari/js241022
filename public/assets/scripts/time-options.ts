@@ -2,33 +2,15 @@ import { format, parse } from "date-fns";
 import locale from "date-fns/locale/pt-BR";
 import { queryStringToJSON } from "./functions/queryStringToJSON";
 import { TimeOptionItem } from "./types/timeOptionItem";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 
 const page = document.querySelector('#time-options') as HTMLElement;
 
 if (page) {
 
-    const timeOptions: TimeOptionItem[] = [{
-        name: '9:00',
-        value: 9,
-    }, {
-        name: '11:00',
-        value: 11,
-    }, {
-        name: '12:00',
-        value: 12,
-    }, {
-        name: '13:00',
-        value: 13,
-    }, {
-        name: '14:00',
-        value: 14,
-    }, {
-        name: '15:00',
-        value: 15,
-    }, {
-        name: '16:00',
-        value: 16,
-    }];
+    let timeOptions: TimeOptionItem[] = [];
+
+    const database = getFirestore();
 
     const queryString = location.search.split('?')[1];
 
@@ -57,24 +39,32 @@ if (page) {
 
         const options = page.querySelector('.options') as HTMLDivElement;
 
-        options.innerHTML = '';
+        const renderOptions = () => {
 
-        timeOptions.forEach((item) => {
+            options.innerHTML = '';
 
-            const label = document.createElement('label');
+            timeOptions.sort((a, b) => {
 
-            label.innerHTML = `
-                <input type="radio" name="time_option" value="${item.value}" />
-                <span>${item.name}</span>
-            `;
+                return Number(a.value) - Number(b.value);
 
-            const input = label.querySelector('input') as HTMLInputElement;
+            }).forEach((item) => {
 
-            input.addEventListener('change', () => checkSelectedOption());
+                const label = document.createElement('label');
+    
+                label.innerHTML = `
+                    <input type="radio" name="time_option" value="${item.value}" />
+                    <span>${item.name}</span>
+                `;
+    
+                const input = label.querySelector('input') as HTMLInputElement;
+    
+                input.addEventListener('change', () => checkSelectedOption());
+    
+                options.appendChild(label);
+    
+            });
 
-            options.appendChild(label);
-
-        });
+        }
 
         const title = page.querySelector('h3') as HTMLHeadingElement;
 
@@ -85,6 +75,20 @@ if (page) {
         const scheduleEl = document.querySelector('[name=schedule_at]') as HTMLInputElement;
 
         scheduleEl.value = scheduleAt ?? '';
+
+        onSnapshot(collection(database, 'time-options'), (collection) => {
+
+            timeOptions = [];
+
+            collection.forEach((document) => {
+    
+                timeOptions.push(document.data() as TimeOptionItem);
+    
+            });
+
+            renderOptions();
+    
+        });
 
     }
 
