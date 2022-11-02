@@ -7,3 +7,7 @@ import './services';
 import './credit-card';
 import './change-photo';
 import './auth-register';
+import './auth-current';
+import './auth-login';
+import './auth-forget';
+import './auth-reset';

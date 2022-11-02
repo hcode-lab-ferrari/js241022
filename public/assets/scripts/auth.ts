@@ -24,7 +24,7 @@ if (authPage) {
             });
         }
 
-        switch (window.location.hash) {
+        switch (window.location.hash.split('?')[0]) {
             case '#login':
                 showAuthForm('login');
                 break;
